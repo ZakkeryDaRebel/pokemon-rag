@@ -33,7 +33,6 @@ create table evolution (
         'level_up', 'use_item', 'trade', 'friendship',
         'move_known', 'special'
     )),
-    minimum_level integer,
     condition text,
     foreign key (original_form_id) references pokedex (pokemon_id),
     foreign key (evolution_form_id) references pokedex (pokemon_id)
