@@ -12,7 +12,6 @@ def getPath(fname):
     return os.path.join(fdir, fname)
 
 # SQLITE
-sqliteDbPath = getPath("aidb.sqlite")
 setupSqlPath = getPath("setup.sql")
 setupSqlDataPath = getPath("setupData.sql")
 
@@ -223,7 +222,11 @@ questions = [
     # ,
     # "What move should Tristan's Cyndaquil use to one shot a level 1 caterpie?"
     # ,
-    "If Red is going to fight a new trainer called Misty that has a Kingdra with Hydro Pump, Dragon Dance, Dragon Pulse, and Blizzard, and a Starmie with Swift, Aqua Jet, Surf, and Recover, what are the 3 best offensive pokemon he could bring and the 3 best defensive pokemon he could bring?"
+    # "If Red is going to fight a new trainer called Misty that has a Kingdra with Hydro Pump, Dragon Dance, Dragon Pulse, and Blizzard, and a Starmie with Swift, Aqua Jet, Surf, and Recover, what are the 3 best offensive pokemon he could bring and the 3 best defensive pokemon he could bring?"
+    # ,
+    # "Which Pokémon does Tristan have in their PC, and what are each Pokémon’s type(s), level, ability, nature, and moves?"
+    # ,
+    "What Pokemon does Tristan have that can evolve and how or when can they evolve?"
 ]
 
 

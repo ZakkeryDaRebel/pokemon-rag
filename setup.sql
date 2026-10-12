@@ -25,10 +25,16 @@ create table pokedex (
 );
 
 create table evolution (
+    evolution_id integer primary key,
     original_form_id integer,
     evolution_form_id integer,
     evolution_level integer not null,
-    primary key (original_form_id, evolution_form_id),
+    method text not null check (method in (
+        'level_up', 'use_item', 'trade', 'friendship',
+        'move_known', 'special'
+    )),
+    minimum_level integer,
+    condition text,
     foreign key (original_form_id) references pokedex (pokemon_id),
     foreign key (evolution_form_id) references pokedex (pokemon_id)
 );
