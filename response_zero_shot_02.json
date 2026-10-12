@@ -1,0 +1,41 @@
+{
+  "strategy": "zero_shot",
+  "prompt_prefix": "create table trainer (\n    trainer_id integer primary key,\n    name varchar(20) not null,\n    gym_badge_count integer\n);\n\ncreate table type (\n    type_id integer primary key,\n    name varchar(20) not null\n);\n\ncreate table pokedex (\n    pokemon_id integer primary key,\n    name varchar(30) not null,\n    base_speed integer not null,\n    base_hp integer not null,\n    base_physical_attack integer not null,\n    base_special_attack integer not null,\n    base_physical_defense integer not null,\n    base_special_defense integer not null,\n    type1 integer not null,\n    type2 integer,\n    foreign key (type1) references type (type_id),\n    foreign key (type2) references type (type_id)\n);\n\ncreate table evolution (\n    original_form_id integer,\n    evolution_form_id integer,\n    evolution_level integer not null,\n    primary key (original_form_id, evolution_form_id),\n    foreign key (original_form_id) references pokedex (pokemon_id),\n    foreign key (evolution_form_id) references pokedex (pokemon_id)\n);\n\ncreate table effectiveness (\n    defender_type integer,\n    attacker_type integer,\n    modifier real not null, --0, 0.5, or 2\n    primary key (defender_type, attacker_type),\n    foreign key (defender_type) references type (type_id),\n    foreign key (attacker_type) references type (type_id)\n);\n\ncreate table nature (\n    nature_id integer primary key,\n    nature_name varchar(20) not null unique,\n    plus_stat varchar(25) not null,\n    negative_stat varchar(25) not null\n);\n\ncreate table moves (\n    move_id integer primary key,\n    name varchar(30) not null,\n    description text not null,\n    power integer,\n    move_type varchar(8) check(move_type in ('physical', 'special', 'status')),\n    type integer,\n    pp integer,\n    foreign key (type) references type (type_id)\n);\n\ncreate table ability (\n    ability_id integer primary key,\n    name varchar(30) not null unique,\n    description text not null\n);\n\ncreate table pc (\n    trainer_id integer,\n    pokemon_id integer,\n    catch_id integer,\n    nickname varchar(20),\n    gender char(7) check (gender in ('Male', 'Female', 'Unknown')),\n    ability integer,\n    move1 integer,\n    move2 integer,\n    move3 integer,\n    move4 integer,\n    level integer,\n    nature integer,\n    primary key (trainer_id, catch_id),\n    foreign key (trainer_id) references trainer (trainer_id),\n    foreign key (pokemon_id) references pokedex (pokemon_id),\n    foreign key (ability) references ability (ability_id),\n    foreign key (move1) references moves (move_id),\n    foreign key (move2) references moves (move_id),\n    foreign key (move3) references moves (move_id),\n    foreign key (move4) references moves (move_id),\n    foreign key (nature) references nature (nature_id)\n);\n\n--create table person (\n--    person_id integer primary key,\n--    name varchar(20) not null\n--);\n--\n--create table phone (\n--    phone_id integer primary key,\n--    person_id integer not null,\n--    area_code int not null,\n--    number int not null,\n--    can_recieve_sms tinyint not null,\n--    foreign key (person_id) references person (person_id)\n--);\n--\n--create table address (\n--    address_id integer primary key,\n--    person_id integer not null,\n--    street varchar(50),\n--    zip integer not null\n--);\n--\n--create table zip (\n--    zip integer primary key,\n--    city varchar(35),\n--    state_two_letter_code char(2)\n--);\n--\n--create table dog (\n--    dog_id integer primary key,\n--    name varchar(35),\n--    breed varchar(35),\n--    birth_date date\n--);\n--\n--create table award (\n--    award_id integer primary key,\n--    dog_id integer not null,\n--    event_date date,\n--    award_name varchar(25) not null,\n--    foreign key (dog_id) references dog (dog_id)\n--);\n--\n--create table person_dog (\n--    dog_id integer,\n--    person_id integer,\n--    foreign key (dog_id) references dog (dog_id),\n--    foreign key (person_id) references person (person_id)\n--);\n\nGiven the SQLite schema above, answer the question with one SQLite SELECT statement only. Do not include markdown or explanations.",
+  "questionResults": [
+    {
+      "question": "Which Pokémon has the highest base Speed?",
+      "sql": "SELECT name, base_speed FROM pokedex WHERE base_speed = (SELECT MAX(base_speed) FROM pokedex) ORDER BY pokemon_id;",
+      "queryRawResponse": "[('Electrode', 140)]",
+      "friendlyResponse": "Electrode has the highest base Speed at 140.",
+      "error": "None"
+    },
+    {
+      "question": "How many level-100 Pokémon does Red have?",
+      "sql": "SELECT COUNT(*) AS level_100_count FROM pc c JOIN trainer t ON c.trainer_id = t.trainer_id WHERE t.name = 'Red' AND c.level = 100;",
+      "queryRawResponse": "[(117,)]",
+      "friendlyResponse": "Red has 117 level-100 Pokémon in his PC.",
+      "error": "None"
+    },
+    {
+      "question": "Which of Red's Pokémon have the Blaze ability?",
+      "sql": "SELECT p.name FROM pc c JOIN trainer t ON c.trainer_id = t.trainer_id JOIN pokedex p ON c.pokemon_id = p.pokemon_id JOIN ability a ON c.ability = a.ability_id WHERE t.name = 'Red' AND a.name = 'Blaze' ORDER BY p.pokemon_id;",
+      "queryRawResponse": "[('Charizard',), ('Typhlosion',)]",
+      "friendlyResponse": "Red's Charizard and Typhlosion have the Blaze ability.",
+      "error": "None"
+    },
+    {
+      "question": "What are Meganium’s types and base stats?",
+      "sql": "SELECT p.name, t1.name AS type1, t2.name AS type2, p.base_hp, p.base_physical_attack, p.base_special_attack, p.base_physical_defense, p.base_special_defense, p.base_speed FROM pokedex p JOIN type t1 ON p.type1 = t1.type_id LEFT JOIN type t2 ON p.type2 = t2.type_id WHERE p.name = 'Meganium';",
+      "queryRawResponse": "[('Meganium', 'Grass', None, 80, 82, 83, 100, 100, 80)]",
+      "friendlyResponse": "Meganium is a Grass type with base HP 80, Attack 82, Special Attack 83, Defense 100, Special Defense 100, and Speed 80.",
+      "error": "None"
+    },
+    {
+      "question": "What are Tristan's Pokémon's levels, abilities, and move slots?",
+      "sql": "SELECT p.name, c.nickname, c.level, a.name AS ability, m1.name AS move1, m2.name AS move2, m3.name AS move3, m4.name AS move4 FROM pc c JOIN pokedex p ON c.pokemon_id = p.pokemon_id JOIN ability a ON c.ability = a.ability_id LEFT JOIN moves m1 ON c.move1 = m1.move_id LEFT JOIN moves m2 ON c.move2 = m2.move_id LEFT JOIN moves m3 ON c.move3 = m3.move_id LEFT JOIN moves m4 ON c.move4 = m4.move_id WHERE c.trainer_id = 2 ORDER BY c.catch_id;",
+      "queryRawResponse": "[('Cyndaquil', 'Fire Boi', 6, 'Blaze', 'Leer', 'Tackle', 'Smokescreen', 'Ember'), ('Pidgey', 'The Better Pigeon', 4, 'Keen Eye', 'Tackle', None, None, None)]",
+      "friendlyResponse": "Fire Boi is a level-6 Cyndaquil with Blaze and the moves Leer, Tackle, Smokescreen, and Ember. The Better Pigeon is a level-4 Pidgey with Keen Eye and Tackle.",
+      "error": "None"
+    }
+  ]
+}
