@@ -18,4 +18,4 @@ AI API key (such as back to OpenAI) if wanted.
 
 ## Database Schema Picture
 
-![Schema](./Database%20Schema.png)
+![Schema](./database_schema.png)
